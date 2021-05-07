@@ -1,0 +1,1 @@
+from .nerds import nerd_list
