@@ -1,5 +1,6 @@
-import cloudscraper, urllib.parse
+import urllib.parse
 from bs4 import BeautifulSoup
+from ..constants.tracker_columns import tracker_columns
 
 def retrieve_stats_from_tracker(scraper, activision_user_string):
     activision_user_string = str(activision_user_string)
@@ -10,7 +11,7 @@ def retrieve_stats_from_tracker(scraper, activision_user_string):
 
     all_stats = soup.find_all('div', {'class': 'numbers'})
 
-    stat_list = []
+    stat_dict = {key: None for key in tracker_columns.stat_columns}
 
     for stat_soup in all_stats[:-4]:
         name        = stat_soup.find(class_="name").string
@@ -20,9 +21,6 @@ def retrieve_stats_from_tracker(scraper, activision_user_string):
         except AttributeError:
             rank    = ""
 
-        stat_list += [[name, value, rank]]
+        stat_dict[name] = value
     
-    if len(stat_list) == 0:
-        stat_list = None
-    
-    return stat_list
+    return stat_dict
