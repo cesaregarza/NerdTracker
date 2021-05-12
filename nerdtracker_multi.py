@@ -1,4 +1,5 @@
 # %%
+print("Initializing")
 import nerdtracker
 import mss, time
 import numpy as np
@@ -17,6 +18,7 @@ with mss.mss() as sct:
         "width": 1920,
         "height": 1080
     }
+    print("Initialized, ready to track")
 
     #Set up last lobby time and last screenshot time at UNIX timestamp 0
     last_lobby_time = 0
@@ -49,7 +51,7 @@ with mss.mss() as sct:
                         player_list = player_list.restart_list(raw_player_reads)
                 else:
                     #If it's the same lobby, add a new snapshot
-                    player_list.new_snapshot_(raw_player_reads)
+                    player_list.new_snapshot(raw_player_reads)
                 
                 if player_list is None:
                     player_list = nerdtracker.Player_List_Class_Multi(raw_player_reads)

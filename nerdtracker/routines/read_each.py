@@ -1,6 +1,7 @@
 import pytesseract, cv2, re, pathlib
 import numpy as np
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+from ...nerdtracker.user_info import tesseract_path
+pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 base_path = pathlib.Path(__file__).parent
 
@@ -8,8 +9,8 @@ def construct_path(path):
     return str( (base_path / path).resolve())
 
 class Function_Dictionary_Class:
-    config_value                = r"--psm 6 --oem 1 -c tessedit_char_whitelist=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#0123456789[]_-"
-    regex_string                = r"[a-zA-Z0-9][a-zA-Z0-9_-]+(#\d+)?"
+    config_value                = r"--psm 6 --oem 1 -c tessedit_char_whitelist=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#0123456789[]_\ -  preserve_interword_spaces=1"
+    regex_string                = r"[a-zA-Z0-9][a-zA-Z0-9_ -]+(#\d+)?"
 
     mouse_template_path         = construct_path(r"..\patterns\mouse_mono.png")
     controller_template_path    = construct_path(r"..\patterns\controller_mono.png")
@@ -85,8 +86,8 @@ def read_each_entry_modern_warfare(image, **kwargs):
     full_locations = full_locations[:, full_locations[0].astype(int).argsort()]
     
     #Subtract the average color through blurring, convert to gray, then increase contrast while decreasing brightness.
-    #Finally, add slight blur to reduce noise caused by the weird square tiles of the background and invert to make it easier
-    #for tesseract to read
+    #Then, add slight blur to reduce noise caused by the weird square tiles of the background and invert to make it easier
+    #for tesseract to read. Finally, increase contrast again while decreasing brightness
     blurred_image   = cv2.blur(image, ksize=func_dict.blur_kernel)
     modified_image  = cv2.addWeighted(image, func_dict.weighted_value, blurred_image, -func_dict.weighted_value, func_dict.weighted_gamma)
     modified_image  = cv2.cvtColor(modified_image, cv2.COLOR_BGR2GRAY)
@@ -114,9 +115,12 @@ def read_each_entry_modern_warfare(image, **kwargs):
 
         #Create a cropped copy of the modified image to be fed into tesseract
         name_box    = modified_image[start_y_value:end_y_value, start_x_value:end_x_value].copy()
+        new_dims    = tuple([3 * x for x in name_box.shape][::-1])
+        name_box    = cv2.resize(name_box, new_dims, interpolation=cv2.INTER_AREA)
 
         #Read the string using tesseract
         read_string = pytesseract.image_to_string(name_box, config=func_dict.config_value)
+        read_string = read_string.replace(" #", "#").replace("# ", "#").replace("\n", "")
 
         #The string will be read with additional characters before or after the string on occasion, this will fix it
         try:

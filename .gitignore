@@ -1,1 +1,3 @@
 *.ipynb
+sensitive*
+user_info.py

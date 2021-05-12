@@ -55,7 +55,7 @@ class Player_List_Class_Multi:
     def restart_list(self, initial_snapshot):
         self.player_list    = self._populate_player_list(self.scraper, initial_snapshot)
 
-    def new_snapshot_(self, snapshot):
+    def new_snapshot(self, snapshot):
 
         #Generate comparisons between the existing list and the new snapshot
         row_comparison_list = self._generate_comparisons(snapshot)
