@@ -5,10 +5,12 @@ import mss, time
 import numpy as np
 import pandas as pd
 import concurrent.futures
-
+import datetime as dt
 
 # %%
 player_list = None
+db_engine = nerdtracker.return_engine()
+
 #Screenshots
 with mss.mss() as sct:
     #Establish the monitor size
@@ -26,10 +28,16 @@ with mss.mss() as sct:
     while True:
         #Take a screenshot and turn it into a numpy array
         frame = np.array(sct.grab(monitor))
-        #If we last took a screenshot less than 5 seconds ago, sleep before trying again
-        if time.time() - last_screenshot_time < 2:
-            time.sleep(2)
+        #If we last took a screenshot less than k seconds ago, sleep before trying again
+        if time.time() - last_screenshot_time < 0.5:
+            time.sleep(0.5)
             continue
+        else:
+            last_screenshot_time = time.time()
+
+        #Remove the alpha channel, which is always 255
+        cut_frame = frame[:, :, :-1]
+        # print(np.mean(cut_frame))
         
         #Check if we're at the lobby screen for the top subsection of the screen
         if nerdtracker.check_if_lobby_screen(frame[:160, :400].copy()):
@@ -70,6 +78,11 @@ with mss.mss() as sct:
             print(display_df.loc[~display_df["Name"].isin(nerdtracker.nerd_list)].drop_duplicates())
 
             last_lobby_time     = time.time()
+        
+        #If the screen has faded to black
+        elif np.mean(cut_frame) < 10 and (time.time() - last_lobby_time) < 5:
+            # nerdtracker.submit_dataframe(db_engine, df)
+            time.sleep(5)
             
         else:
-            time.sleep(3)
+            time.sleep(.5)

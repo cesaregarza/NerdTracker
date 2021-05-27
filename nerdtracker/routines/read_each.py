@@ -1,12 +1,25 @@
 import pytesseract, cv2, re, pathlib
 import numpy as np
-from ...nerdtracker.user_info import tesseract_path
+from ..user_info import tesseract_path
 pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
 base_path = pathlib.Path(__file__).parent
 
 def construct_path(path):
     return str( (base_path / path).resolve())
+
+replacements = [
+    ["# ", "#"],
+    [" #", "#"],
+    ["\n", ""],
+    ["y ", "y"],
+]
+
+def replace_common_errors(input_string):
+    for [read_error, fix] in replacements:
+        input_string = input_string.replace(read_error, fix)
+    
+    return input_string
 
 class Function_Dictionary_Class:
     config_value                = r"--psm 6 --oem 1 -c tessedit_char_whitelist=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ#0123456789[]_\ -  preserve_interword_spaces=1"
@@ -118,9 +131,9 @@ def read_each_entry_modern_warfare(image, **kwargs):
         new_dims    = tuple([3 * x for x in name_box.shape][::-1])
         name_box    = cv2.resize(name_box, new_dims, interpolation=cv2.INTER_AREA)
 
-        #Read the string using tesseract
+        #Read the string using tesseract and make common replacements
         read_string = pytesseract.image_to_string(name_box, config=func_dict.config_value)
-        read_string = read_string.replace(" #", "#").replace("# ", "#").replace("\n", "")
+        read_string = replace_common_errors(read_string)
 
         #The string will be read with additional characters before or after the string on occasion, this will fix it
         try:

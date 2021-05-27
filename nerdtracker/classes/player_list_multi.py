@@ -281,6 +281,9 @@ class Player_List_Class_Multi:
             #If we've seen the player and the stats are not empty, return the values previously seen
             elif player_exists[func_dict.stats_index] is not None:
                 return_row = player_exists
+            #If we've seen the player and he's a nerd
+            elif player_exists[func_dict.player_name_index] in nerd_list:
+                return row
             #If we've seen the player and the stats are empty
             else:
                 #Retrieve new stats using the new player name, then add the new stats to the all_seen_players pool
@@ -289,6 +292,6 @@ class Player_List_Class_Multi:
                 self.all_seen_players  += [return_row]
         #If the stat hasn't been flagged, just return the row
         else:
-            return_row = row
+            return row
 
         return return_row

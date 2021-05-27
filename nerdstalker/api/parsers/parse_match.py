@@ -1,7 +1,9 @@
 import asyncio
+import callofduty
 import pandas as pd
+from .full_match_parser import parse_full_match
 
-async def parse_given_match(match_object):
+async def parse_given_match(match_object, client):
 
     #Retrieve the full match details based on the Match object
     current_match = await match_object.details()
@@ -36,7 +38,9 @@ async def parse_given_match(match_object):
     players_df.loc[:, ["Kills", "Deaths"]] = players_df.loc[:, ["Kills", "Deaths"]].fillna(0).astype(int)
     players_df['KDR'] = players_df['Kills'] / players_df['Deaths'].replace(0,1)
 
-    return [players_df, engagements_df]
+    full_match_df = await parse_full_match(client, match_object.id)
+
+    return [players_df, engagements_df, full_match_df]
 
 
 def parse_match_players(match_dict):
