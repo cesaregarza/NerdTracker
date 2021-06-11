@@ -1,5 +1,3 @@
-import asyncio
-import callofduty
 import pandas as pd
 from .full_match_parser import parse_full_match
 

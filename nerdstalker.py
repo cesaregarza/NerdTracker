@@ -10,6 +10,8 @@ db_data = {
     "db_url":   "nerdtracker.cegarza.com:3306/nerd_tracker_sql_db"
 }
 
+
+
 def return_engine():
     db_url = f"{db_data['username']}:{db_data['password']}@{db_data['db_url']}"
     engine = db.create_engine(f"mysql+pymysql://{db_url}")
@@ -34,7 +36,7 @@ nerd_list = [
 ]
 
 client  = await nerdstalker.api.callofduty_client()
-profile = await client.GetPlayer(callofduty.Platform.Activision, nerd_list[1])
+profile = await client.GetPlayer(callofduty.Platform.Activision, nerd_list[0])
 
 matches = await nerdstalker.api.retrieve_matches(profile)
 
