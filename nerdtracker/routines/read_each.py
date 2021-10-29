@@ -3,6 +3,8 @@ import numpy as np
 from ..user_info import tesseract_path
 pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
+from PIL import Image
+
 base_path = pathlib.Path(__file__).parent
 
 def construct_path(path):
@@ -29,7 +31,7 @@ class Function_Dictionary_Class:
     controller_template_path    = construct_path(r"..\patterns\controller_mono.png")
     horizontal_offset           = 142
     negative_horizontal_offset  = 66
-    template_threshold          = 0.9
+    template_threshold          = 0.7
     row_width                   = 40
     blur_kernel                 = (8,8)
     weighted_value              = 2
@@ -49,7 +51,7 @@ class Function_Dictionary_Class:
 
 func_dict = Function_Dictionary_Class()
 
-def read_each_entry_modern_warfare(image, **kwargs):
+def read_each_entry_modern_warfare(image, scale, **kwargs):
 
     #Override existing default values based on input kwargs
     func_dict.update(**kwargs)
@@ -65,6 +67,7 @@ def read_each_entry_modern_warfare(image, **kwargs):
     full_locations = []
 
     for template, controller_type in [mouse_template, controller_template]:
+
         template_height, template_width = template.shape
         
         #Use matchTemplate to identify where the template is located in the image
@@ -75,6 +78,7 @@ def read_each_entry_modern_warfare(image, **kwargs):
 
         #Identify the amount of templates located, and move onto the next one if none were located
         amount_located      = len(template_locations[0])
+        print(amount_located)
 
         if amount_located == 0:
             continue

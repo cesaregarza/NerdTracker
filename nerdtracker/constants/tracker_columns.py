@@ -50,6 +50,12 @@ class Function_Dictionary_Class:
     display_columns = [
                         "Name",
                         "Controller",
+                        "unoUsername",
+                        "username",
+                        "times_played",
+                        "kdr",
+                        "last_played",
+                        "kpm",
                         "K/D Ratio",
                         "Win %",
                         "Current Win Streak"

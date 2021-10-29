@@ -25,6 +25,7 @@ class Function_Dictionary_Class:
     start_legend_x      = -60
     start_legend_y      = 50
     font_path           = r"/System/Library/Fonts/Supplemental/Rockwell.ttc"
+    font_encoding       = None
     text_stroke_width   = 2
     text_size           = 20
     
@@ -108,7 +109,7 @@ def generate_histogram(xy_values, image_path, **kwargs):
     low_percentile_list     = [percentile_list[return_first_matching_index(x)] for x in unique_percentile_list[::-1]]
 
     #Generate the font
-    font = ImageFont.truetype(func_dict.font_path, size=func_dict.text_size)
+    font = ImageFont.truetype(func_dict.font_path, size=func_dict.text_size, encoding=func_dict.font_encoding)
 
     #Generate the legend, starting from the last value and moving backwards
     for color, percent_value, i in zip(unique_color_list, low_percentile_list, range(len(low_percentile_list))):

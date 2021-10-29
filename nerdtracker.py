@@ -1,9 +1,24 @@
 # %%
+print("Initializing nerdtracker")
 import nerdtracker
 import mss, time, datetime
 from PIL import Image
 import numpy as np
 import pandas as pd
+import sqlalchemy as db
+
+db_data = {
+    "username": "nerdtracker",
+    "password": "iwishiknewhowtopressmouse1",
+    "db_url":   "nerdtracker.cegarza.com:3306/nerd_tracker_sql_db"
+}
+
+def return_engine():
+    db_url = f"{db_data['username']}:{db_data['password']}@{db_data['db_url']}"
+    engine = db.create_engine(f"mysql+pymysql://{db_url}")
+    return engine
+
+engine = return_engine()
 
 nerds = [
     "Joy#1648235",
@@ -17,6 +32,7 @@ nerds = [
 ]
 
 # %%
+print("Initialized")
 player_list = None
 with mss.mss() as sct:
     monitor = {
@@ -42,7 +58,7 @@ with mss.mss() as sct:
 
             if (time.time() - last_lobby_time) > 10:
                 if player_list is None:
-                    player_list = nerdtracker.Player_List_Class(raw_player_reads)
+                    player_list = nerdtracker.Player_List_Class(raw_player_reads, engine)
                 else:
                     player_list = player_list.restart_list(raw_player_reads)
             else:
@@ -50,7 +66,7 @@ with mss.mss() as sct:
                 last_loby_time = time.time()
             
             if player_list is None:
-                player_list = nerdtracker.Player_List_Class(raw_player_reads)
+                player_list = nerdtracker.Player_List_Class(raw_player_reads, engine)
             
             df = pd.DataFrame([[*x[:-1], x[-1][0][1], x[-1][2][1], x[-1][7][1]] if (x[-1] is not None) else [*x, None, None] for x in player_list.player_list], columns=["Name", "Controller", "KDR", "Win%", "Current Win Streak"])
             print(df.loc[~df['Name'].isin(nerdtracker.nerd_list)])

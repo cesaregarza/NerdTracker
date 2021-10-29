@@ -1,5 +1,6 @@
 import cv2, pathlib
 from numpy import amax, uint8
+from PIL import Image
 
 base_path = pathlib.Path(__file__).parent
 
