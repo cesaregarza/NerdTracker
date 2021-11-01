@@ -1,7 +1,7 @@
 import urllib.parse
 from bs4 import BeautifulSoup
 from ..constants.tracker_columns import tracker_columns
-from ..classes import StatsObject
+from ..classes.stats_object import StatsObject
 from cloudscraper import CloudScraper
 
 def retrieve_stats_from_tracker(scraper:CloudScraper, activision_user_string:str) -> StatsObject:
