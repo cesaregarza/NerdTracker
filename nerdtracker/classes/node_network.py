@@ -37,7 +37,7 @@ class NodeNetwork:
         self.scraper_object     = scraper
         self.prune_threshold    = prune_threshold
         self.max_nodes          = max_nodes
-        self.nodes              = nodes
+        self.nodes              = nodes if nodes is not None else []
         self.engine             = sql_engine
         self.players            = self.retrieve_player_data_from_sql()
     

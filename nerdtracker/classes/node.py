@@ -67,8 +67,8 @@ class Node:
         else:
             self.stats.update_stats(stats)
     
-    def find_stats(self, attempted_name: str) -> None:
-        
+    def find_stats(self, attempted_name: Optional[str] = None) -> None:
+        attempted_name = self.name if attempted_name is None else attempted_name
         #Check if the node has been flagged for a stats update
         if self.flag_for_stats_update:
             #If so, retrieve the stats from the tracker

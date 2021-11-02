@@ -45,7 +45,8 @@ def parse_delta(delta:str) -> timedelta:
 
 class StatsObject:
     def __init__(self, initial_stats_dict:Union[Dict[str, Optional[str]], pd.DataFrame]) -> None:
-
+        
+        self.stats_dict = {}
         #If the initial stats dict is a dataframe, convert it to a records dict
         if isinstance(initial_stats_dict, pd.DataFrame):
             initial_stats_dict = initial_stats_dict.to_dict(orient="records")[0]

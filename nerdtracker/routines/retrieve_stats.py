@@ -1,10 +1,9 @@
 import urllib.parse
 from bs4 import BeautifulSoup
 from ..constants.tracker_columns import tracker_columns
-from ..classes.stats_object import StatsObject
 from cloudscraper import CloudScraper
 
-def retrieve_stats_from_tracker(scraper:CloudScraper, activision_user_string:str) -> StatsObject:
+def retrieve_stats_from_tracker(scraper:CloudScraper, activision_user_string:str):
     """Retrieve stats from tracker.gg, returning a StatsObject
 
     Args:
@@ -14,6 +13,7 @@ def retrieve_stats_from_tracker(scraper:CloudScraper, activision_user_string:str
     Returns:
         StatsObject: StatsObject object
     """
+    from ..classes.stats_object import StatsObject
     # Retrieve stats from tracker.gg using the activision user ID
     activision_user_string = str(activision_user_string)
     tracker_url = f"https://cod.tracker.gg/modern-warfare/profile/atvi/{urllib.parse.quote(activision_user_string)}/mp"
