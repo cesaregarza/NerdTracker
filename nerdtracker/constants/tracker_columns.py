@@ -66,10 +66,6 @@ class Function_Dictionary_Class:
                         curr_winstreak
     ]
     required_columns = [
-                        name,
-                        controller,
-                        uno_username,
-                        username,
                         times_played,
                         "kdr",
                         last_played,

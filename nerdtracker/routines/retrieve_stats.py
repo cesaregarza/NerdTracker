@@ -34,4 +34,4 @@ def retrieve_stats_from_tracker(scraper:CloudScraper, activision_user_string:str
         stat_dict[name] = value
     
     # Return a StatsObject object
-    return StatsObject(stat_dict)
+    return StatsObject(stat_dict, tracker=True)

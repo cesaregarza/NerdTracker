@@ -1,6 +1,6 @@
 from ..classes import StatsObject
 from ..functions.assist import insert_costs, delete_costs, substitute_costs
-from typing import List, Optional, Union, Dict
+from typing import List, Optional, Union, Dict, Any
 from weighted_levenshtein import lev
 from cloudscraper import CloudScraper
 from ..routines import retrieve_stats_from_tracker
@@ -8,6 +8,7 @@ from ..routines import retrieve_stats_from_tracker
 class Node:
     def __init__(self, name:str, scraper_object:CloudScraper, position:int, similarity_threshold:float = 0.6) -> None:
         self.name                   = name
+        self.attempted_name         = name
         self.position               = position
         self.similarity_threshold   = similarity_threshold
         self.scraper_object         = scraper_object
@@ -55,12 +56,13 @@ class Node:
         self.count     += 1
     
     def _found(self, attempted_name:str, position:int) -> None:
-        self.count     = 0
-        self.position = position
+        self.count          = 0
+        self.position       = position
+        self.attempted_name = attempted_name
         if self.stats is None:
             self.flag_for_stats_update = True
     
-    def update_stats(self, stats:Dict) -> None:
+    def update_stats(self, stats:Optional[Union[StatsObject, Dict[str, Any]]]) -> None:
         """Update the node's stats with the given stats"""
         if self.stats is None:
             self.stats = StatsObject(stats)
@@ -68,7 +70,7 @@ class Node:
             self.stats.update_stats(stats)
     
     def find_stats(self, attempted_name: Optional[str] = None) -> None:
-        attempted_name = self.name if attempted_name is None else attempted_name
+        attempted_name = self.attempted_name if attempted_name is None else attempted_name
         #Check if the node has been flagged for a stats update
         if self.flag_for_stats_update:
             #If so, retrieve the stats from the tracker

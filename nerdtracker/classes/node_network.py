@@ -144,12 +144,18 @@ class NodeNetwork:
 
         #Update the stats for each node if they exist in the SQL database
         for node in self.nodes:
-            try:
-                _, _, index_found   = process.extractOne(node.name, self.players["unoUsername"], score_cutoff = 90)
-                node.stats          = StatsObject(self.players.loc[index_found])
-                node.name           = self.players.loc[index_found, "unoUsername"]
-            except TypeError:
-                node.stats          = None
+            # try:
+            #     _, _, index_found   = process.extractOne(node.name, self.players["unoUsername"], score_cutoff = 90)
+            #     stats               = StatsObject(self.players.loc[index_found])
+            #     node.update_stats(stats)
+            #     node.name           = self.players.loc[index_found, "unoUsername"]
+            _, _, index_found   = process.extractOne(node.name, self.players["unoUsername"], score_cutoff = 90)
+            stats               = StatsObject(self.players.loc[index_found])
+            node.update_stats(stats)
+            node.name           = self.players.loc[index_found, "unoUsername"]
+            # except TypeError as e:
+            #     print(e)
+            #     node.stats          = None
 
     def update_stats_flagged(self) -> None:
         """Update the stats of all the flagged nodes in the network"""
