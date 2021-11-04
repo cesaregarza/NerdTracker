@@ -1,5 +1,8 @@
 from typing import Dict, Tuple, Union
 import pathlib
+import cv2
+import numpy as np
+import numpy.typing as npt
 
 base_path = pathlib.Path(__file__).parent
 def construct_path(path: str) -> str:
@@ -68,25 +71,23 @@ class SceneDescriber:
 
         self.frames_per_second      = frames_per_second
 
-        #Check if paths are absolute, if not, make them absolute
-        if not pathlib.Path(lobby_image_path).is_absolute():
-            self.lobby_image_path = construct_path(lobby_image_path)
-        else:
-            self.lobby_image_path = lobby_image_path
+        icon_paths = {
+            'lobby_image':      {'path': lobby_image_path,     
+                                 'multiplier': lobby_image_multiplier},
+            'mouse_icon':       {'path': mouse_icon_path,
+                                 'multiplier': mouse_icon_multiplier},
+            'controller_icon':  {'path': controller_icon_path,
+                                 'multiplier': controller_icon_multiplier}
+        }
+        self.icon_paths = {}
 
-        if not pathlib.Path(mouse_icon_path).is_absolute():
-            self.mouse_icon_path = construct_path(mouse_icon_path)
-        else:
-            self.mouse_icon_path = mouse_icon_path
+        for key, value in icon_paths.items():
+            self.icon_paths[key] = {'multiplier': value['multiplier'],}
+            if not pathlib.Path(value['path']).is_absolute():
+                self.icon_paths[key]['path'] = construct_path(value['path'])
+            else:
+                self.icon_paths[key]['path'] = value['path']
         
-        if not pathlib.Path(controller_icon_path).is_absolute():
-            self.controller_icon_path = construct_path(controller_icon_path)
-        else:
-            self.controller_icon_path = controller_icon_path
-        
-        self.lobby_image_multiplier     = lobby_image_multiplier
-        self.mouse_icon_multiplier      = mouse_icon_multiplier
-        self.controller_icon_multiplier = controller_icon_multiplier
         self.space_between_players      = space_between_players
 
         #Calculate widths and heights
@@ -94,3 +95,58 @@ class SceneDescriber:
         self.player_list_height = self.player_list_bottom - self.player_list_top
         self.lobby_image_width  = self.lobby_image_right - self.lobby_image_left
         self.lobby_image_height = self.lobby_image_bottom - self.lobby_image_top
+    
+    def _get_icon(self, icon_path: str, icon_multiplier: float) -> np.ndarray:
+        """Get the icon from the path.
+
+        Args:
+            icon_path (str): The path to the icon.
+            icon_multiplier (float): The size multiplier for the icon.
+
+        Returns:
+            npt.ndarray: The icon.
+        """
+        icon = cv2.imread(icon_path, cv2.IMREAD_GRAYSCALE)
+        icon = cv2.resize(icon, (0, 0), fx=icon_multiplier, fy=icon_multiplier)
+        return icon
+
+    def get_lobby_icon(self) -> np.ndarray:
+        """Get the lobby icon.
+
+        Returns:
+            npt.ndarray: The lobby icon.
+        """
+        return self._get_icon(self.icon_paths['lobby_image']['path'], self.icon_paths['lobby_image']['multiplier'])
+    
+    def get_mouse_icon(self) -> np.ndarray:
+        """Get the mouse icon.
+
+        Returns:
+            npt.ndarray: The mouse icon.
+        """
+        return self._get_icon(self.icon_paths['mouse_icon']['path'], self.icon_paths['mouse_icon']['multiplier'])
+    
+    def get_controller_icon(self) -> np.ndarray:
+        """Get the controller icon.
+
+        Returns:
+            npt.ndarray: The controller icon.
+        """
+        return self._get_icon(self.icon_paths['controller_icon']['path'], self.icon_paths['controller_icon']['multiplier'])
+    
+
+    def get_lobby_limits(self) -> Tuple[int, int, int, int]:
+        """Get the lobby limits.
+
+        Returns:
+            Tuple[int, int, int, int]: The lobby limits.
+        """
+        return self.lobby_image_top, self.lobby_image_right, self.lobby_image_bottom, self.lobby_image_left
+
+    def get_player_list_limits(self) -> Tuple[int, int, int, int]:
+        """Get the player list limits.
+
+        Returns:
+            Tuple[int, int, int, int]: The player list limits.
+        """
+        return self.player_list_top, self.player_list_right, self.player_list_bottom, self.player_list_left

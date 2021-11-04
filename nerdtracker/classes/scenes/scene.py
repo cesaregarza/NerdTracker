@@ -8,9 +8,9 @@ class Scene(ABC):
         pass
 
     @abstractmethod
-    def read_each_line(self, input) -> list:
+    def read_each_line(self, screenshot: np.ndarray) -> list:
         pass
     
     @abstractmethod
-    def check_if_in_lobby(self, screenshot: np.array) -> bool:
+    def check_if_in_lobby(self, screenshot: np.ndarray) -> bool:
         pass
